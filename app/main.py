@@ -2,7 +2,7 @@ import pandas as pd
 from fastapi import FastAPI, UploadFile, HTTPException
 from io import BytesIO
 from app import data
-from app.schemas import UploadResponse
+from app.schemas import UploadResponse, StatsResponse
 from app.config import settings
 
 
@@ -38,3 +38,10 @@ async def upload_data(file: UploadFile):
         columns=df.columns.tolist(),
         dtypes=df.dtypes.astype(str).to_dict()
     )
+
+
+@app.get("/data/stats", response_model=StatsResponse)
+def get_stats():
+    if data.dataset is None:
+        raise HTTPException(status_code=404, detail="Inget dataset har laddats upp ännu.")
+    raise HTTPException(status_code=501, detail="Statistikfunktionen är inte implementerad ännu.")
