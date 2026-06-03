@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, HTTPException
 from io import BytesIO
 from app import data
 from app.schemas import UploadResponse
+from app.config import settings
 
 
 app = FastAPI(title="KK2")
@@ -20,6 +21,10 @@ async def upload_data(file: UploadFile):
     
     content = await file.read()
     
+    max_bytes = settings.max_file_size_mb * 1024 * 1024
+    if len(content) > max_bytes:
+        raise HTTPException(status_code=400, detail=f"Filen är för stor. Max tillåtna storleken är {settings.max_file_size_mb} MB.")
+
     try:
         df = pd.read_csv(BytesIO(content))
     except (pd.errors.ParserError, UnicodeDecodeError) as e:
