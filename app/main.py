@@ -44,4 +44,5 @@ async def upload_data(file: UploadFile):
 def get_stats():
     if data.dataset is None:
         raise HTTPException(status_code=404, detail="Inget dataset har laddats upp ännu.")
-    raise HTTPException(status_code=501, detail="Statistikfunktionen är inte implementerad ännu.")
+    
+    return StatsResponse(stats=data.dataset.describe().to_dict())
