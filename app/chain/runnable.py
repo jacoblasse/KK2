@@ -11,3 +11,9 @@ class Runnable(BaseModel, Generic[I, O]):
 
     def invoke(self, data: I) -> O:
         raise NotImplementedError("Subclasses must implement the invoke method.")
+    
+class RunnableLambda(Runnable[I, O]):
+    func: Callable[[I], O]
+
+    def invoke(self, data: I) -> O:
+        return self.func(data)
