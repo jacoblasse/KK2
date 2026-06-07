@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.config import settings
 
 class PromptBuilderInput(BaseModel):
     question: str
@@ -11,4 +12,4 @@ class PromptBuilderOutput(BaseModel):
 class ResponseParserOutput(BaseModel):
     prompt: str
     answer: str
-    model: str = "HuggingFaceTB/SmolLM2-135M-Instruct"
+    model: str = settings.llm_name
