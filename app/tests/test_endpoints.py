@@ -21,3 +21,11 @@ def test_upload_data(client):
     assert data["rows"] == 2
     assert data["columns"] == ["name", "age"]
     assert "dtypes" in data
+
+
+def test_upload_invalid_file(client):
+    files = {"file": ("test.txt", "This is not a CSV file.")}
+    response = client.post("/data/upload", files=files)
+
+    assert response.status_code == 400
+    assert "csv" in response.json()["detail"].lower()
