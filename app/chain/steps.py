@@ -22,11 +22,11 @@ class ResponseParserOutput(BaseModel):
 
 class PromptBuilder(Runnable[PromptBuilderInput, PromptBuilderOutput]):
     def invoke(self, data: PromptBuilderInput) -> PromptBuilderOutput:
-        prompt = f"Du är en dataanalytiker som hjälper till att svara på frågor baserat på datasetets statistik. Fråga: {data.question} Stats: {data.stats_summary} Svara på frågan baserat på statistiken. "
+        prompt = f"You are a data analyst who answers questions based on the dataset's statistics. Question: {data.question} Stats: {data.stats_summary} Answer the question based on the statistics. "
     
         return PromptBuilderOutput(prompt=prompt)
     
-    
+
 pipe = pipeline("text-generation", model=settings.llm_name)
 
 class LLMRunner(Runnable[PromptBuilderOutput, LLMRunnerOutput]):
