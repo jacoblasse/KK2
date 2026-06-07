@@ -36,3 +36,8 @@ class LLMRunner(Runnable[PromptBuilderOutput, LLMRunnerOutput]):
         ]
         output = pipe(messages, max_new_tokens=500)
         return LLMRunnerOutput(raw_text=output[0]["generated_text"][-1]["content"])
+
+class ResponseParser(Runnable[LLMRunnerOutput, ResponseParserOutput]):
+    def invoke(self, data: LLMRunnerOutput) -> ResponseParserOutput:
+        answer = data.raw_text.strip()
+        return ResponseParserOutput(prompt="", answer=answer)
