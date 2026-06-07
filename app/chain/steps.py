@@ -2,6 +2,9 @@ from pydantic import BaseModel
 from app.config import settings
 from app.chain.runnable import Runnable, RunnableLambda, RunnableSequence
 
+class LLMRunnerOutput(BaseModel):
+    raw_test: str
+
 class PromptBuilderInput(BaseModel):
     question: str
     stats_summary: str
