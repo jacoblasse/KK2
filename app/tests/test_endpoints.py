@@ -1,6 +1,12 @@
 import pytest
 from fastapi.testclient import TestClient
 
+@pytest.fixture(autouse=True)
+def reset_state():
+    from app import data
+    data.dataset = None
+    yield
+
 @pytest.fixture
 def client():
     from app.main import app
@@ -29,3 +35,8 @@ def test_upload_invalid_file(client):
 
     assert response.status_code == 400
     assert "csv" in response.json()["detail"].lower()
+
+
+def test_stats_without_data(client):
+    response = client.get("/data/stats")
+    assert response.status_code == 404
