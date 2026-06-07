@@ -2,7 +2,9 @@ import pandas as pd
 from fastapi import FastAPI, UploadFile, HTTPException
 from io import BytesIO
 from app import data
-from app.schemas import UploadResponse, StatsResponse
+from app.schemas import UploadResponse, StatsResponse, AskRequest, AskResponse
+from app.chain.pipeline import oraklet
+from app.chain.steps import PromptBuilderInput
 from app.config import settings
 
 
@@ -46,3 +48,15 @@ def get_stats():
         raise HTTPException(status_code=404, detail="Inget dataset har laddats upp ännu.")
     
     return StatsResponse(stats=data.dataset.describe().to_dict())
+
+
+
+@app.post("/ai/ask", response_model=AskResponse)
+def ask(request: AskRequest):
+    if data.dataset is None:
+        raise HTTPException(status_code=404, detail="Inget dataset har laddats upp ännu.")
+    try:
+        result = oraklet.invoke(PromptBuilderInput(question=request.question, stats_summary=data.dataset.describe().to_string()))
+        return AskResponse(question=request.question, answer = result.answer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ett fel inträffade: {e}")
