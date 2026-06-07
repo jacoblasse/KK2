@@ -40,3 +40,16 @@ def test_upload_invalid_file(client):
 def test_stats_without_data(client):
     response = client.get("/data/stats")
     assert response.status_code == 404
+
+
+def test_stats_with_data(client):
+    csv_content = "name,age\nJacob,22\nKevin,21"
+    files = {"file": ("test.csv", csv_content)}
+    client.post("/data/upload", files=files)
+
+    response = client.get("/data/stats")
+    assert response.status_code == 200
+    stats = response.json()["stats"]
+    assert "age" in stats
+    assert stats["age"]["count"] == 2
+    assert stats["age"]["mean"] == 21.5
