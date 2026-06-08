@@ -53,3 +53,24 @@ def test_stats_with_data(client):
     assert "age" in stats
     assert stats["age"]["count"] == 2
     assert stats["age"]["mean"] == 21.5
+
+def test_ai_ask_with_mocked_chain(client, monkeypatch):
+    csv_content = "name,age\nJacob,22\nKevin,21"
+    files = {"file": ("test.csv", csv_content)}
+    client.post("/data/upload", files=files)
+
+    from app.chain.steps import ResponseParserOutput
+
+    class FakeChain:
+        def invoke(self, input):
+            return ResponseParserOutput(prompt = "", answer="The average age is 21.5")
+        
+    import app.main
+    monkeypatch.setattr(app.main, "oraklet", FakeChain())
+
+    response = client.post("/ai/ask", json={"question": "What is the average age?"})
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["question"] == "What is the average age?"
+    assert data["answer"] == "The average age is 21.5"

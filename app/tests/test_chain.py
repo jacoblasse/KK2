@@ -17,5 +17,3 @@ def test_response_parser_strips_whitespace():
 
     assert isinstance(output, ResponseParserOutput)
     assert output.answer == "hello there"
-
-    
